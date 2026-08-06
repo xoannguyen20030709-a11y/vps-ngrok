@@ -95,24 +95,9 @@ jobs:
           }
 
           if (-not $ngrokUrl) {
-            Write-Host "Ngrok không cấp URL — ghi TUNNEL_FAILED vào rdp_info.txt"
-            $errorLines = @(
-              '=======================================================',
-              'RDP NGROK - DucThang x TrueHieu Edition',
-              '=======================================================',
-              'FULL ADDRESS   : TUNNEL_FAILED',
-              'Username       : ' + $USER,
-              'Password       : ' + $PASS,
-              'Region         : ap (Singapore)',
-              ('Created        : ' + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')),
-              '=======================================================',
-              'NGROK_ERROR: Ngrok không cấp được tunnel URL sau 60 lần thử.',
-              '======================================================='
-            )
-            [System.IO.File]::WriteAllText("$(Get-Location)\rdp_info.txt", ($errorLines -join "`r`n"))
-            git add rdp_info.txt
-            git commit -m "Ngrok tunnel failed: TUNNEL_FAILED" --allow-empty
-            git push origin main --force-with-lease
+            Write-Host "Ngrok không cấp URL — log:"
+            Get-Content ngrok.log -ErrorAction SilentlyContinue | Write-Host
+            Get-Content ngrok-err.log -ErrorAction SilentlyContinue | Write-Host
             Stop-Process -Id $ngrokProcess.Id -Force -ErrorAction SilentlyContinue
             exit 1
           }
